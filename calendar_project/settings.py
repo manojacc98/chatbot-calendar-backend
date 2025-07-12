@@ -135,11 +135,13 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://192.168.1.6:3000",
+    "https://chatbot-calendar-frontend.vercel.app",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "http://192.168.1.6:3000",
+    "https://chatbot-calendar-frontend.vercel.app",
 ]
 # from dotenv import load_dotenv
 import os
