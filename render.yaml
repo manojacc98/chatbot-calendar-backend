@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: chatbot-calendar-backend
+    env: python
+    region: oregon
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn calendar_project.wsgi:application --bind 0.0.0.0:8000
+    envVars:
+      - key: DEBUG
+        value: true
