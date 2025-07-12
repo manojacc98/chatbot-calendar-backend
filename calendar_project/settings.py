@@ -138,6 +138,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://192.168.1.6:3000",
     "https://chatbot-calendar-frontend.vercel.app",
     f"https://{RENDER_DOMAIN}",
+    "https://chatbot-calendar-froentend-git-main-manojs-projects-4ea21a96.vercel.app",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
