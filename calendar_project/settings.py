@@ -130,18 +130,21 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
+RENDER_DOMAIN = "your-backend-service.onrender.com"
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://192.168.1.6:3000",
     "https://chatbot-calendar-frontend.vercel.app",
+    f"https://{RENDER_DOMAIN}",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "http://192.168.1.6:3000",
     "https://chatbot-calendar-frontend.vercel.app",
+    f"https://{RENDER_DOMAIN}",
 ]
 # from dotenv import load_dotenv
 import os

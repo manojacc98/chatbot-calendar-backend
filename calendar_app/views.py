@@ -87,7 +87,8 @@ def google_callback(request):
         }
     )
 
-    return redirect(f"http://localhost:3000/?email={email}")
+    return redirect(f"https://chatbot-calendar-frontend.vercel.app/?email={email}")
+
 
 
 
@@ -95,10 +96,13 @@ def google_callback(request):
 def calendar_events(request):
     email = request.GET.get("email")
 
+    if not email:
+        return JsonResponse({"error": "Email parameter is required."}, status=400)
+
     try:
         user_token = GoogleUserToken.objects.get(email=email)
     except GoogleUserToken.DoesNotExist:
-        return JsonResponse({"error": "No credentials found"}, status=403)
+        return JsonResponse({"error": "No credentials found for this user."}, status=403)
 
     access_token = user_token.access_token
 
@@ -109,13 +113,16 @@ def calendar_events(request):
 
     calendar_url = "https://www.googleapis.com/calendar/v3/calendars/primary/events"
 
-    def try_post_event(headers, event):
-        response = requests.post(calendar_url, headers=headers, json=event)
-        return response
+    # Helper function to create event
+    def try_post_event(event_data):
+        return requests.post(calendar_url, headers=headers, json=event_data)
 
+    # ----------- GET Method: Fetch Events -----------
     if request.method == "GET":
         response = requests.get(calendar_url, headers=headers)
+
         if response.status_code == 401:
+            # Refresh token
             refreshed = refresh_google_token(user_token.refresh_token)
             if refreshed:
                 user_token.access_token = refreshed["access_token"]
@@ -129,77 +136,44 @@ def calendar_events(request):
 
         if response.status_code != 200:
             return Response({"error": "Failed to fetch events", "details": response.json()}, status=response.status_code)
+
         return Response(response.json())
 
-
-
+    # ----------- POST Method: Create Event -----------
     elif request.method == "POST":
-
         data = request.data
 
-        print(" Incoming POST data:", data)
-
         event = {
-
             "summary": data.get("summary", "Untitled Event"),
-
             "description": data.get("description", ""),
-
             "start": {
-
                 "dateTime": data.get("start"),
-
                 "timeZone": data.get("timezone", "Asia/Kolkata")
-
             },
-
             "end": {
-
                 "dateTime": data.get("end"),
-
                 "timeZone": data.get("timezone", "Asia/Kolkata")
-
             }
-
         }
 
-        print("🛠️ Final Event JSON to Google:", event)
-
-        response = try_post_event(headers, event)
+        response = try_post_event(event)
 
         if response.status_code == 401:
-
-
             refreshed = refresh_google_token(user_token.refresh_token)
-
             if refreshed:
-
                 user_token.access_token = refreshed["access_token"]
-
                 user_token.expires_in = refreshed["expires_in"]
-
                 user_token.save()
 
                 headers["Authorization"] = f"Bearer {user_token.access_token}"
-
-                response = try_post_event(headers, event)
-
+                response = try_post_event(event)
             else:
-
                 return Response({"error": "Failed to refresh token"}, status=403)
 
         if response.status_code not in [200, 201]:
-            print(" Google Calendar API POST failed:")
-
-            print("Status:", response.status_code)
-
-            print("Response:", response.json())
-
-            return Response({"error": "Failed to create event", "details": response.json()},
-                            status=response.status_code)
+            return Response({"error": "Failed to create event", "details": response.json()}, status=response.status_code)
 
         return Response(response.json(), status=status.HTTP_201_CREATED)
-
 
 
 def refresh_google_token(refresh_token):
