@@ -1,0 +1,97 @@
+# ️ Calendar Chatbot Backend
+
+This is the backend of the **Chatbot Calendar Assistant** project, built with **Django** and integrated with **Google Calendar API** using OAuth2. It exposes REST API endpoints to authenticate users, fetch calendar events, create new events, and handle natural language chatbot requests.
+
+---
+
+##  Features
+
+-  Google OAuth2 Login (no need to manually add emails)
+-  Fetch upcoming events from Google Calendar
+-  Create new events via API
+-  Simple chatbot that understands natural language inputs like:
+  - "Create meeting tomorrow at 3 PM"
+  - "What's on my calendar today?"
+
+---
+
+## 🛠 Tech Stack
+
+- **Backend Framework**: Django 4.x + Django REST Framework
+- **Google Integration**: Google Calendar API (OAuth2 flow)
+- **NLP**: spaCy + custom rule-based parser
+- **CORS**: `django-cors-headers` for frontend connection
+- **Python Version**: 3.10+
+
+---
+
+##  Project Structure
+
+calendar_project/
+├── calendar_app/
+│ ├── views.py # API views for login, events, chatbot
+│ ├── google_calendar.py # Google API integration logic
+│ ├── utils/
+│ │ └── chatbot_interpreter.py # NLP chatbot logic
+│ └── urls.py
+├── calendar_project/
+│ └── settings.py
+├── requirements.txt
+└── manage.py
+
+
+---
+
+## ️ Setup Instructions
+
+### 1. Clone the repo
+
+
+git clone https://github.com/YOUR_USERNAME/chatbot-calendar-backend.git
+cd chatbot-calendar-backend
+
+2. Create and activate virtual environment
+
+python -m venv venv
+source venv/bin/activate  # on Windows: venv\Scripts\activate
+
+3. Install dependencies
+
+pip install -r requirements.txt
+
+4. Add Google Credentials
+
+    Create OAuth2 credentials in Google Cloud Console
+
+    Download the credentials.json
+
+    Place it in the root directory (or wherever configured in settings.py)
+
+5. Run the Django server
+
+python manage.py runserver
+
+Authentication Flow
+
+    Frontend opens /api/google/login/
+
+    User logs in with Gmail → redirected with token
+
+    Access token is stored and used for all calendar API operations
+
+Chatbot Logic
+
+The chatbot uses simple rule-based NLP to parse common sentences and trigger event creation:
+
+"Book a meeting tomorrow at 5 PM"
+→ Extracts: { summary: "meeting", date: "tomorrow", time: "5 PM" }
+→ Creates Google Calendar event
+
+You can expand this logic using spaCy or integrate LLMs later.
+
+Sample API Endpoints
+Method	Endpoint	Description
+GET	/api/google/login/	Redirect to Gmail login
+GET	/api/events/?email=	List calendar events
+POST	/api/events/?email=	Create calendar event
+POST	/api/chatbot/?email=	Send chatbot message
