@@ -7,4 +7,14 @@ services:
     startCommand: gunicorn calendar_project.wsgi:application --bind 0.0.0.0:8000
     envVars:
       - key: DEBUG
-        value: true
+        value: false
+      - key: ALLOWED_HOSTS
+        value: chatbot-calendar-backend.onrender.com,localhost,127.0.0.1
+      - key: SECRET_KEY
+        value: your-secret-key
+      - key: GOOGLE_CLIENT_ID
+        value: your-google-client-id
+      - key: GOOGLE_CLIENT_SECRET
+        value: your-google-client-secret
+      - key: GOOGLE_REDIRECT_URI
+        value: https://chatbot-calendar-backend.onrender.com/api/google/callback/
