@@ -94,6 +94,10 @@ def google_callback(request):
 
 @api_view(["GET", "POST"])
 def calendar_events(request):
+    print("📥 Incoming Event API Call")
+    print("🔗 Request method:", request.method)
+    print("🧠 Email param:", request.GET.get("email"))
+    print("📦 Data received:", request.data)
     email = request.GET.get("email")
 
     if not email:
